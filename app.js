@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
 var expressValidator = require('express-validator');
-var flash = require('flash');
+var flash = require('connect-flash');
 var session = require('express-session');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -39,6 +39,10 @@ app.use(session({
     resave: true
 }));
 
+//passport init
+app.use(passport.initialize());
+app.use(passport.session());
+
 // express validator
 app.use(expressValidator({
     errorFormatter: function(param, msg, value) {
@@ -70,3 +74,10 @@ app.use(function(req, res, next) {
 
 app.use('/', routes);
 app.use('./users', users);
+
+//set port
+app.set('port', (process.env.PORT || 3000));
+
+app.listen(app.get('port'), function() {
+    console.log('Serer started on port ' + app.get('port'));
+});
