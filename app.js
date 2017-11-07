@@ -13,8 +13,8 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost//loginapp');
 var db = mongoose.connection();
 
-var index = require('./routers/index');
-    users = require('./routers/users');
+var index = require('./routes/index');
+    users = require('./routes/users');
 
 //initialise app
 var app = express();
@@ -39,3 +39,34 @@ app.use(session({
     resave: true
 }));
 
+// express validator
+app.use(expressValidator({
+    errorFormatter: function(param, msg, value) {
+        var namespace = param.split('.')
+        , root = namespace.shift()
+        , formParam = root;
+
+    while(namespace.length) {
+        formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+        param: formParam,
+        msg: msg,
+        value:  value 
+    };
+    }
+}));
+
+// connect flash
+app.use(flash());
+
+//global variables for flash messages
+app.use(function(req, res, next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+});
+
+app.use('/', routes);
+app.use('./users', users);
