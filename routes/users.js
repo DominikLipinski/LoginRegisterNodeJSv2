@@ -1,5 +1,6 @@
 var express = require('express');
 var router  = express.Router();
+var user = require('../modules/user');
 
 // register (view)
 router.get('/register', function(req, res) {
@@ -32,7 +33,19 @@ router.post('/register', function(req, res) {
             errors:errors
         })
     } else {
-        console.log('No errors');
+       var newUser = new User({
+           name: name,
+           email: email,
+           username: username,
+           password: password
+       });
+
+       User.createUser(newUser, function(err, user){
+           if(err) throw err;
+           console.log(user)
+       });
+       req.flash('success_msg', "Registration completed, you can now login.")
+       res.redirect('/users/login');
     }
 });
 
