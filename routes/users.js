@@ -61,6 +61,15 @@ passport.use(new LocalStrategy(
             if(!user) {
                 return done(null, false, {message: 'User unknown.'});
             }
+        
+        User.comparePassword(password, user.password, function(err, isMatch) {
+            if(err) throw err;
+            if(isMatch) {
+                return done(null, user);
+            } else {
+                return done(null, false, {message: "Password invalid."});
+            }
+        });    
         });
     }));
 
